@@ -11,6 +11,7 @@ class MovieController extends Controller
 {
     /**
      * Construtor do controller
+     * Aplica middleware de autenticação
      */
     public function __construct()
     {
@@ -23,6 +24,11 @@ class MovieController extends Controller
      */
     public function index()
     {
+        // Verificar se usuário está autenticado
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         // Mostrar apenas filmes do usuário logado com gêneros
         $movies = Auth::user()->movies()->with('genre')->latest()->get();
         $genres = Genre::all(); // Para os filtros

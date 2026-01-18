@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 // Redirecionar raiz para login se não autenticado
 Route::get('/', function () {
-    return redirect()->route('login');
+    return auth()->check() ? redirect()->route('movies.index') : redirect()->route('login');
 });
 
 // Rotas de autenticação do Breeze

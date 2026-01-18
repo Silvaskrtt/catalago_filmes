@@ -4,9 +4,9 @@
 
 @section('content')
 <!-- MAIN CATALOG SCREEN -->
-<div id="catalog-screen" class="screen active flex-col h-full w-full">
+<div id="catalog-screen" class="screen active grid grid-rows-[auto_1fr_auto] min-h-screen">
     <!-- Header -->
-    <header class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex-shrink-0">
+    <header class="bg-gray-900 border-b border-gray-800 px-6 py-4 row-start-1">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-lg">
@@ -27,7 +27,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-auto px-6 py-8">
+    <main class="row-start-2 overflow-auto px-6 py-8">
         <div class="max-w-6xl mx-auto">
             <!-- Action Bar -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -119,7 +119,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 border-t border-gray-800 px-6 py-4 flex-shrink-0">
+    <footer class="bg-gray-900 border-t border-gray-800 px-6 py-4 row-start-3">
         <p id="footer-text" class="text-center text-gray-500 text-sm">
             © {{ date('Y') }} Catálogo de Filmes
         </p>
