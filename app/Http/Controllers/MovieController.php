@@ -23,9 +23,11 @@ class MovieController extends Controller
      */
     public function index()
     {
-        // Mostrar apenas filmes do usuário logado
-        $movies = Auth::user()->movies()->with('genre')->get();
-        return view('movies.index', compact('movies'));
+        // Mostrar apenas filmes do usuário logado com gêneros
+        $movies = Auth::user()->movies()->with('genre')->latest()->get();
+        $genres = Genre::all(); // Para os filtros
+
+        return view('movies.index', compact('movies', 'genres'));
     }
 
     /**
