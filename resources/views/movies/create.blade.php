@@ -22,7 +22,7 @@
     <!-- Form Content -->
     <main class="flex-1 overflow-auto px-6 py-8">
         <div class="max-w-2xl mx-auto">
-            <form id="movie-form" method="POST" action="{{ route('movies.store') }}" class="space-y-6 fade-in">
+            <form id="movie-form" method="POST" action="{{ route('movies.store') }}" enctype="multipart/form-data" class="space-y-6 fade-in">
                 @csrf
 
                 <div>
@@ -49,6 +49,15 @@
                     @error('genre_id')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <div>
+                    <label for="cover_image" class="block text-sm font-medium text-gray-300 mb-2">Capa do Filme</label>
+                    <div class="mt-2">
+                        <input type="file" id="cover_image" name="cover_image" accept="image/*"
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">Formatos: JPEG, PNG, GIF, WebP. Tamanho máximo: 2MB</p>
                 </div>
 
                 <div>

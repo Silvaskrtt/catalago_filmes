@@ -75,6 +75,19 @@
                         $genreColor = $genreColors[$movie->genre_id] ?? 'bg-gray-700 text-gray-300';
                     @endphp
 
+                    <!-- Imagem da capa -->
+                    <div class="mb-4 relative">
+                        <div class="w-full rounded-xl overflow-hidden bg-gray-800">
+                            <img src="{{ $movie->cover_url }}"
+                                alt="{{ $movie->title }}"
+                                class="w-full h-full object-cover"
+                                onerror="this.src='{{ asset('images/default-movie-cover.jpg') }}'">
+                        </div>
+                        <span class="absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-medium {{ $genreColor }}">
+                            {{ $movie->genre->name }}
+                        </span>
+                    </div>
+
                     <div class="flex items-start justify-between mb-4">
                         <span class="px-3 py-1 rounded-full text-xs font-medium {{ $genreColor }}">
                             {{ $movie->genre->name }}

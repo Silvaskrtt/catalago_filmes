@@ -22,7 +22,7 @@
     <!-- Form Content -->
     <main class="flex-1 overflow-auto px-6 py-8">
         <div class="max-w-2xl mx-auto">
-            <form id="movie-form" method="POST" action="{{ route('movies.update', $movie) }}" class="space-y-6 fade-in">
+            <form id="movie-form" method="POST" action="{{ route('movies.update', $movie) }}" enctype="multipart/form-data" class="space-y-6 fade-in">
                 @csrf
                 @method('PUT')
 
@@ -50,6 +50,32 @@
                     @error('genre_id')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <div>
+                    <label for="cover_image" class="block text-sm font-medium text-gray-300 mb-2">Capa do Filme</label>
+
+                    <!-- Preview da imagem atual -->
+                    @if($movie->hasCover())
+                    <div class="mb-4">
+                        <img src="{{ $movie->cover_url }}"
+                            alt="Capa atual"
+                            class="w-32 object-cover rounded-lg mb-2 border border-gray-700">
+                        <p class="text-gray-400 text-sm mb-2">Capa atual</p>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remove_cover" name="remove_cover" value="1"
+                            class="mr-2 rounded bg-gray-800 border-gray-700 text-red-600 focus:ring-red-600 focus:ring-offset-gray-900">
+                        <label for="remove_cover" class="text-sm text-gray-300">Remover capa atual</label>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Campo para nova imagem -->
+                <div class="mt-2">
+                    <input type="file" id="cover_image" name="cover_image" accept="image/*"
+                        class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
+                </div>
+                    <p class="text-gray-500 text-sm mt-1">Deixe em branco para manter a capa atual. Formatos: JPEG, PNG, GIF, WebP. Tamanho máximo: 2MB</p>
                 </div>
 
                 <div>
