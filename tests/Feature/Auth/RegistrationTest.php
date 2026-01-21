@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 
@@ -15,5 +17,10 @@ test('new users can register', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+
+    $response->assertRedirect(route('movies.index', absolute: false));
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'test@example.com',
+    ]);
 });
