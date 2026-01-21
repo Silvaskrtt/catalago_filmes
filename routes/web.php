@@ -34,6 +34,10 @@ Route::middleware(['auth'])->group(function () {
     // CRUD de Filmes
     Route::resource('movies', MovieController::class);
 
+    // Rota para criar gênero via AJAX
+    Route::post('/genres/store-ajax', [MovieController::class, 'storeGenre'])
+        ->name('genres.store-ajax');
+
     // CRUD de Gêneros (se necessário)
     Route::resource('genres', GenreController::class)->except(['show']);
 });

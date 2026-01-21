@@ -37,18 +37,55 @@
 
                 <div>
                     <label for="genre_id" class="block text-sm font-medium text-gray-300 mb-2">Gênero *</label>
-                    <select id="movie-genre" name="genre_id" required
-                            class="w-full px-4 py-3 bg-gray-800 border @error('genre_id') border-red-500 @else border-gray-700 @enderror rounded-xl text-white input-focus appearance-none cursor-pointer">
+
+                    <div class="flex gap-2 mb-2">
+                        <select id="movie-genre" name="genre_id" required
+                            class="flex-1 px-4 py-3 bg-gray-800 border @error('genre_id') border-red-500 @else border-gray-700 @enderror rounded-xl text-white input-focus appearance-none cursor-pointer">
                         <option value="">Selecione um gênero</option>
                         @foreach($genres as $genre)
                         <option value="{{ $genre->id }}" {{ old('genre_id') == $genre->id ? 'selected' : '' }}>
-                            {{ $genre->name }}
+                        {{ $genre->name }}
                         </option>
                         @endforeach
                     </select>
+
+                    <button type="button" id="add-genre-btn"
+                            class="px-4 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium rounded-xl transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Novo
+                    </button>
+                    </div>
                     @error('genre_id')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <!-- Modal para adicionar novo gênero -->
+                <div id="genre-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden px-4">
+                     <div class="bg-gray-900 rounded-2xl p-6 max-w-md w-full border border-gray-800 shadow-2xl fade-in">
+                        <h3 class="text-xl font-bold text-white mb-4">Adicionar Novo Gênero</h3>
+
+                        <div class="mb-4">
+                            <label for="new-genre-name" class="block text-sm font-medium text-gray-300 mb-2">Nome do Gênero</label>
+                            <input type="text" id="new-genre-name"
+                                class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 input-focus"
+                                placeholder="Ex: Ficção Científica">
+                            <p id="genre-error" class="text-red-500 text-sm mt-1 hidden"></p>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button onclick="closeGenreModal()"
+                                    class="flex-1 py-3 bg-gray-800 text-gray-300 font-semibold rounded-xl hover:bg-gray-700 transition-colors">
+                                Cancelar
+                            </button>
+                            <button onclick="saveNewGenre()" id="save-genre-btn"
+                                    class="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors">
+                                Salvar
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -104,6 +141,11 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const addGenreBtn = document.getElementById('add-genre-btn');
+        if (addGenreBtn) {
+            addGenreBtn.addEventListener('click', openGenreModal);
+        }
+
         // Set initial rating from hidden input
         const initialRating = parseInt(document.getElementById('movie-rating').value) || 0;
         setRating(initialRating);
@@ -128,6 +170,76 @@
             showToast('Por favor, corrija os erros no formulário');
         @endif
     });
+
+    function openGenreModal() {
+        document.getElementById('genre-modal').classList.remove('hidden');
+        document.getElementById('new-genre-name').focus();
+    }
+
+    function closeGenreModal() {
+        document.getElementById('genre-modal').classList.add('hidden');
+        document.getElementById('new-genre-name').value = '';
+        document.getElementById('genre-error').classList.add('hidden');
+        document.getElementById('genre-error').textContent = '';
+    }
+
+    function saveNewGenre() {
+        const genreName = document.getElementById('new-genre-name').value.trim();
+        const saveBtn = document.getElementById('save-genre-btn');
+        const errorEl = document.getElementById('genre-error');
+
+        if (!genreName) {
+            errorEl.textContent = 'Por favor, digite um nome para o gênero.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        // Desabilitar botão durante a requisição
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Salvando...';
+        errorEl.classList.add('hidden');
+
+        // Enviar requisição AJAX
+        fetch('{{ route("genres.store-ajax") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ name: genreName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Adicionar nova opção ao select
+                const select = document.getElementById('movie-genre');
+                const newOption = document.createElement('option');
+                newOption.value = data.genre.id;
+                newOption.textContent = data.genre.name;
+                select.appendChild(newOption);
+
+                // Selecionar o novo gênero
+                select.value = data.genre.id;
+
+                // Fechar modal
+                closeGenreModal();
+
+                // Mostrar mensagem de sucesso
+                showToast(data.message);
+            } else {
+                errorEl.textContent = data.message;
+                errorEl.classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            errorEl.textContent = 'Erro ao conectar com o servidor.';
+            errorEl.classList.remove('hidden');
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Salvar';
+        });
+    }
 
     function setRating(rating) {
         document.getElementById('movie-rating').value = rating;
